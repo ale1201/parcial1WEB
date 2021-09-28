@@ -1,0 +1,28 @@
+@import url("https://fonts.googleapis.com/css2?family=Satisfy&display=swap");
+#title {
+    font-family: "Satisfy";
+  }
+#carrito {
+   width: 3em;
+   height: 3em;
+}
+.menu {
+    background-color:black;
+    width: 100%;
+    height: 5em;
+    color: white;
+    padding: 1.6em;
+  }
+.card {
+    width: 16rem;
+    margin-top: 0.5em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
+}
+.card-img-top {
+    height: 10em;
+    width: 13em;
+}
+
+
+  
