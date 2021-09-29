@@ -1,17 +1,30 @@
 @import url("https://fonts.googleapis.com/css2?family=Satisfy&display=swap");
 #title {
+    margin-top: 30px;
     font-family: "Satisfy";
   }
 #carrito {
+  margin-top: 30px;
    width: 3em;
    height: 3em;
 }
+
+#precioCarta{
+  font-weight: bold;
+}
+
+#precioFinal{
+  font-weight: bold;
+}
+
+#cantidad {
+  margin-top : 40px;
+}
 .menu {
-    background-color:black;
-    width: 100%;
-    height: 5em;
+    height: 6em;
+    width: 69em;
     color: white;
-    padding: 1.6em;
+    padding: 2.1em;
   }
 .card {
     width: 16rem;
@@ -22,6 +35,10 @@
 .card-img-top {
     height: 10em;
     width: 13em;
+}
+
+#agregarCarrito{
+  color:white;
 }
 
 

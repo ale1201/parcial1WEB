@@ -60,94 +60,14 @@ drink.addEventListener("click", ()=>{
     });
 })
 
-let carritoImagen = document.getElementById("carrito");
-carritoImagen.addEventListener("click", () =>{
+let carrito = document.getElementById("carrito");
+carrito.addEventListener("click", () =>{
   refrescar()
   mostrarTablaCarrito()
 })
 
 function mostrarTablaCarrito(){
-  let titulo = document.getElementById("nombreProducto");
-  let info = document.getElementById("producto");
-  let divRow = document.createElement("div");
-  divRow.className = "row";
 
-  let name = document.createElement("h1");
-  name.innerText = "Order detail";
-  name.className = "text-center";
-
-  titulo.appendChild(name);
-
-  var tbl = document.createElement("table");
-  var thead = document.createElement("thead");
-  tbl.setAttribute("class", "table table-striped");
-  temp = "";
-  temp += "<tr>";
-  temp += "<th scope='col'> Item </th>";
-  temp += "<th scope='col'> Qty. </th>";
-  temp += "<th scope='col'> Description </th>";
-  temp += "<th scope='col'> Unit Price </th>";
-  temp += "<th scope='col'> Amount </th>";
-  temp += "<th scope='col'> Modify </th></tr>";
-  thead.innerHTML = temp
-  tbl.appendChild(thead)
-  i=1
-  var precioFinal = 0;
-  var tbody = document.createElement("tbody");
-  products.forEach(element => {
-    var tr = document.createElement("tr");
-    temp = "<th scope='row'>" + (i) + "</th>"
-    temp += "<td scope='row'>" + element["qty"] + "</td>";
-    temp += "<td>" + element["description"] + "</td>";
-    temp += "<td>" + element["price"] + "</td>";
-    temp += "<td>" + element["amount"] + "</td>";
-    temp += "<td> <button type='button' class='btn btn-dark'> + </button> <button type='button' class='btn btn-dark'> - </button> </td>";
-    tr.innerHTML = temp
-    tbody.appendChild(tr)
-    precioFinal += element["amount"]
-    i+=1
-  });
-  
-  tbl.appendChild(tbody)
-
-  let con1 = document.createElement("div");
-  con1.className = "row";
-  con1.appendChild(tbl);
-  
-
-  let con2 = document.createElement("div");
-  con2.className = "row";
-
-  let con21 = document.createElement("div")
-  con21.className = ("col-9")
-
-  let con22 = document.createElement("div")
-  con22.className = ("col-1")
-
-  let con23 = document.createElement("div")
-  con23.className = ("col-1.5")
-
-  let pr = document.createElement("p");
-  pr.id = "precioFinal"
-  pr.innerHTML = "Total: $" + precioFinal;
-  con21.appendChild(pr)
-
-  let botCancel = document.createElement("button");
-  botCancel.className = "btn btn-danger"
-  botCancel.innerHTML = "Cancel"
-  con22.appendChild(botCancel)
-
-  let botConfir = document.createElement("button");
-  botConfir.className = "btn btn-danger"
-  botConfir.innerHTML = "Confirm Order"
-  con23.appendChild(botConfir)
-  
-  con2.appendChild(con21);
-  con2.appendChild(con22);
-  con2.appendChild(con23);
-
-  info.appendChild(con1);
-  info.appendChild(con2);
 }
 
 
@@ -193,7 +113,7 @@ function mostrarComida(comida){
           document.getElementById("cantidad").innerHTML = totalProducts + " Items";
           if (carrito.includes(c.name)){
             products.forEach(element => {
-              if(element["description"] === c.name){
+              if(element["name"] === c.name){
                 element["qty"] += 1
                 element["amount"] = element["qty"]*element["price"]
               }
@@ -210,7 +130,6 @@ function mostrarComida(comida){
             products.push(dicci)
           }
           console.log(products)
-          console.log(carrito)
         }
 
         let im = document.createElement("img");
