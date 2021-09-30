@@ -63,20 +63,24 @@ drink.addEventListener("click", ()=>{
 let carritoImagen = document.getElementById("carrito");
 carritoImagen.addEventListener("click", () =>{
   refrescar()
-  mostrarTablaCarrito()
+  mostrarTablaCarrito(false)
 })
 
-function mostrarTablaCarrito(){
-  let titulo = document.getElementById("nombreProducto");
+function mostrarTablaCarrito(title){
+  if (title === false){
+    let titulo = document.getElementById("nombreProducto");
+    let name = document.createElement("h1");
+    name.id = "Orden"
+    name.innerText = "Order detail";
+    name.className = "text-center";
+    titulo.appendChild(name);
+  }
+  
   let info = document.getElementById("producto");
   let divRow = document.createElement("div");
   divRow.className = "row";
 
-  let name = document.createElement("h1");
-  name.innerText = "Order detail";
-  name.className = "text-center";
-
-  titulo.appendChild(name);
+  
 
   var tbl = document.createElement("table");
   var thead = document.createElement("thead");
@@ -84,9 +88,9 @@ function mostrarTablaCarrito(){
   temp = "";
   temp += "<tr>";
   temp += "<th scope='col'> Item </th>";
-  temp += "<th scope='col'> Qty. </th>";
+  temp += "<th scope='col'> quantity. </th>";
   temp += "<th scope='col'> Description </th>";
-  temp += "<th scope='col'> Unit Price </th>";
+  temp += "<th scope='col'> Unit unitPrice </th>";
   temp += "<th scope='col'> Amount </th>";
   temp += "<th scope='col'> Modify </th></tr>";
   thead.innerHTML = temp
@@ -95,17 +99,20 @@ function mostrarTablaCarrito(){
   var precioFinal = 0;
   var tbody = document.createElement("tbody");
   products.forEach(element => {
-    var tr = document.createElement("tr");
-    temp = "<th scope='row'>" + (i) + "</th>"
-    temp += "<td scope='row'>" + element["qty"] + "</td>";
-    temp += "<td>" + element["description"] + "</td>";
-    temp += "<td>" + element["price"] + "</td>";
-    temp += "<td>" + element["amount"] + "</td>";
-    temp += "<td> <button type='button' class='btn btn-dark'> + </button> <button type='button' class='btn btn-dark'> - </button> </td>";
-    tr.innerHTML = temp
-    tbody.appendChild(tr)
-    precioFinal += element["amount"]
-    i+=1
+    if(element["quantity"]!==0){
+      var tr = document.createElement("tr");
+      temp = "<th scope='row'>" + (i) + "</th>"
+      temp += "<td scope='row'>" + element["quantity"] + "</td>";
+      temp += "<td>" + element["description"] + "</td>";
+      temp += "<td>" + element["unitPrice"] + "</td>";
+      temp += "<td>" + round2(element["amount"]) + "</td>";
+      temp += "<td> <button type='button' class='btn btn-dark' onclick='aumentar(this)'> + </button> <button type='button' class='btn btn-dark' onclick='disminuir(this)'> - </button> </td>";
+      tr.innerHTML = temp
+      tbody.appendChild(tr)
+      precioFinal += round2(element["amount"]);
+      i+=1
+    }
+    
   });
   
   tbl.appendChild(tbody)
@@ -113,7 +120,6 @@ function mostrarTablaCarrito(){
   let con1 = document.createElement("div");
   con1.className = "row";
   con1.appendChild(tbl);
-  
 
   let con2 = document.createElement("div");
   con2.className = "row";
@@ -129,7 +135,7 @@ function mostrarTablaCarrito(){
 
   let pr = document.createElement("p");
   pr.id = "precioFinal"
-  pr.innerHTML = "Total: $" + precioFinal;
+  pr.innerHTML = "Total: $" + round2(precioFinal);
   con21.appendChild(pr)
 
   let botCancel = document.createElement("button");
@@ -137,10 +143,24 @@ function mostrarTablaCarrito(){
   botCancel.innerHTML = "Cancel"
   con22.appendChild(botCancel)
 
+  botCancel.onclick = () => {
+    cancelPedido()
+  };
+  
   let botConfir = document.createElement("button");
-  botConfir.className = "btn btn-danger"
+  botConfir.className = "btn btn-light"
   botConfir.innerHTML = "Confirm Order"
   con23.appendChild(botConfir)
+
+  botConfir.onclick = () => {
+    console.log(products)
+    refrescarCarrito();
+    carrito = [];
+    products = [];
+    totalProducts = 0;
+    document.getElementById("cantidad").innerHTML = totalProducts + " items";
+    mostrarTablaCarrito()
+  };
   
   con2.appendChild(con21);
   con2.appendChild(con22);
@@ -158,6 +178,7 @@ function mostrarComida(comida){
     divRow.className = "row";
 
     let name = document.createElement("h1");
+    name.id = ("comidaTitle")
     name.innerText = comida.name;
     name.className = "text-center";
 
@@ -171,6 +192,7 @@ function mostrarComida(comida){
         body.className = "card-body";
 
         let title = document.createElement("h4");
+        title.id = "comidaT"
         title.className = "card-title";
         title.innerText = c.name;
 
@@ -178,10 +200,10 @@ function mostrarComida(comida){
         detail.className = "card-text";
         detail.innerText = c.description;
 
-        let price = document.createElement("p");
-        price.className = "card-text";
-        price.innerText = "$"+c.price;
-        price.id = "precioCarta"
+        let unitPrice = document.createElement("p");
+        unitPrice.className = "card-text";
+        unitPrice.innerText = "$"+c.price;
+        unitPrice.id = "precioCarta"
 
         let car = document.createElement("a");
         car.className = "btn btn-dark";
@@ -190,27 +212,26 @@ function mostrarComida(comida){
 
         car.onclick = ()=>{
           totalProducts += 1
-          document.getElementById("cantidad").innerHTML = totalProducts + " Items";
+          document.getElementById("cantidad").innerHTML = totalProducts + " items";
           if (carrito.includes(c.name)){
             products.forEach(element => {
               if(element["description"] === c.name){
-                element["qty"] += 1
-                element["amount"] = element["qty"]*element["price"]
+                element["quantity"] += 1
+                element["amount"] = round2(element["quantity"]*element["unitPrice"]);
               }
             });
           }
           else{
             carrito.push(c.name);
             let dicci = {
-              "qty" : 1,
+              "item" : products.length+1,
+              "quantity" : 1,
               "description" : c.name,
-              "price" : c.price,
-              "amount" : c.price
+              "unitPrice" : c.price,
+              "amount" : c.price 
             }
             products.push(dicci)
           }
-          console.log(products)
-          console.log(carrito)
         }
 
         let im = document.createElement("img");
@@ -220,7 +241,7 @@ function mostrarComida(comida){
         body.appendChild(im);
         body.appendChild(title);
         body.appendChild(detail);
-        body.appendChild(price);
+        body.appendChild(unitPrice);
         body.appendChild(car);
         
         card.appendChild(body);
@@ -232,6 +253,49 @@ function mostrarComida(comida){
     }
 }
 
+function aumentar(pedido) {
+  var name = pedido.parentNode.previousSibling.previousSibling.previousSibling
+  products.forEach(element => {
+    if(element["description"] === name.textContent){
+      element["quantity"] +=1 ;
+      element["amount"] += round2(element["unitPrice"]);
+    }
+  });
+  totalProducts +=1;
+  document.getElementById("cantidad").innerHTML = totalProducts + " Items";
+  refrescarCarrito();
+  mostrarTablaCarrito(true);
+}
+
+function disminuir(pedido) {
+  var name = pedido.parentNode.previousSibling.previousSibling.previousSibling
+  products.forEach(element => {
+    if(element["description"] === name.textContent){
+      element["quantity"] -=1 ;
+      element["amount"] -= round2(element["unitPrice"]);
+      if(element["quantity"]===0){
+        carrito = carrito.filter(function(car) {
+          return car !== name.textContent; 
+      });
+        products = products.filter(function(car) {
+        return car.description !== name.textContent; 
+    });
+      }
+    }
+  });
+  totalProducts -=1;
+  document.getElementById("cantidad").innerHTML = totalProducts + " items";
+  refrescarCarrito();
+  mostrarTablaCarrito(true);
+}
+
+function refrescarCarrito(){
+  var node = document.getElementById("producto");
+  while(node.firstChild){
+    node.removeChild(node.firstChild);
+  }
+}
+
 function refrescar() {
     var node = document.getElementById("producto");
     while (node.firstChild) {
@@ -241,4 +305,105 @@ function refrescar() {
     while (node.firstChild) {
       node.removeChild(node.firstChild);
     }
+}
+
+function round2(num) {
+  return +(Math.round(num + "e+2") + "e-2");
+}
+
+
+function cancelPedido(){
+  var modal = document.createElement("div");
+  modal.id = "myModal";
+  modal.className = "modal";
+
+  var content = document.createElement("div");
+  content.className = "modal-content";
+
+  var header = document.createElement("div");
+  header.className = 'modal-header';
+
+  var span = document.createElement("span");
+  span.className = "close";
+  span.innerHTML = "&times;"
+
+  var h2 = document.createElement("h5");
+  h2.id = "titleModal"
+  h2.innerHTML  = "Cancel the order";
+
+  header.appendChild(h2);
+  header.appendChild(span);
+  
+
+  var body = document.createElement("div");
+  body.className = "modal-body";
+
+  var tex = document.createElement("p");
+  tex.innerHTML = "Are you sure about cancelling the order?";
+
+  body.appendChild(tex);
+
+  var foot = document.createElement("div");
+  foot.className = "modal-footer";
+
+  var botones = document.createElement("div");
+  botones.className = "container";
+
+  var div1 = document.createElement("div");
+  div1.className = "row-2 botones";
+
+  var div2 = document.createElement("div");
+  div2.className = "row-2 botones";
+
+  var bt1 = document.createElement("button");
+  bt1.innerHTML = "Yes, I want to cancel the order"
+  bt1.className = "btn btn-light"
+  div1.appendChild(bt1);
+  var bt2 = document.createElement("button");
+  bt2.innerHTML = "No, I want to continue adding products"
+  bt2.className = "btn btn-danger"
+  div2.appendChild(bt2);
+  bt1.onclick = () => {
+    carrito = [];
+    products = [];
+    totalProducts = 0;
+    refrescarCarrito();
+    mostrarTablaCarrito(true);
+    document.getElementById("cantidad").innerHTML = totalProducts + " items";
+    modal.style.display = "none";
+  };
+
+  bt2.onclick = () => {
+    modal.style.display = "none";
+  };
+
+  botones.appendChild(div1);
+  botones.appendChild(div2);
+  foot.appendChild(botones);
+
+  content.appendChild(header);
+  content.appendChild(body);
+  content.appendChild(foot);
+
+  modal.appendChild(content);
+
+  document.body.appendChild(modal)
+
+  var modal2 = document.getElementById("myModal");
+
+  var span = document.getElementsByClassName("close")[0];
+
+  modal2.style.display = "block";
+
+  span.onclick = function() {
+    modal2.style.display = "none";
+  }
+  
+  // When the user clicks anywhere outside of the modal, close it
+  window.onclick = function(event) {
+    if (event.target == modal2) {
+      modal2.style.display = "none";
+    }
+  }
+
 }
